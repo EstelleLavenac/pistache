@@ -157,8 +157,42 @@ const lit=(x,y)=>`<g transform="translate(${x},${y})"><rect x="-120" y="-10" wid
 const couverture=(x,y)=>`<path transform="translate(${x},${y})" d="M-100 -30 q100 -30 210 0 v40 h-210z" fill="${C.sol}"/><g transform="translate(${x},${y})">${[-70,-30,10,50,90].map(c=>`<circle cx="${c}" cy="-6" r="6" fill="${C.cor}"/>`).join('')}</g>`;
 const svg=inner=>`<svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg" role="img">${inner}</svg>`;
 
+function garcon(x,y,s=1,{cartable=false,bras=false,content=true}={}){
+  return `<g class="touche" data-son="ding" transform="translate(${x},${y}) scale(${s})">
+    ${cartable?`<rect x="-30" y="-46" width="24" height="34" rx="7" fill="${C.cor}" stroke="#C9553A" stroke-width="2.5"/>`:''}
+    <rect x="-14" y="10" width="11" height="26" rx="5" fill="#F2C9A0"/><rect x="3" y="10" width="11" height="26" rx="5" fill="#F2C9A0"/>
+    <ellipse cx="-8" cy="37" rx="10" ry="5" fill="#3E7BD6"/><ellipse cx="9" cy="37" rx="10" ry="5" fill="#3E7BD6"/>
+    <rect x="-18" y="2" width="36" height="16" rx="6" fill="#4C5BA8"/>
+    <path d="M-20 -32 q20 -10 40 0 l2 38 h-44z" fill="${C.sol}" stroke="#D9A41E" stroke-width="2.5"/>
+    ${bras?`<path d="M18 -26 q18 -12 22 -32" stroke="#F2C9A0" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M-18 -26 q-12 10 -10 26" stroke="#F2C9A0" stroke-width="9" fill="none" stroke-linecap="round"/>`
+          :`<path d="M18 -26 q8 12 6 26" stroke="#F2C9A0" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M-18 -26 q-8 12 -6 26" stroke="#F2C9A0" stroke-width="9" fill="none" stroke-linecap="round"/>`}
+    ${cartable?`<path d="M-14 -32 l4 30 M12 -32 l-4 30" stroke="#C9553A" stroke-width="4"/>`:''}
+    <circle cx="0" cy="-56" r="26" fill="#F2C9A0"/>
+    <path d="M-27 -58 q0 -30 28 -28 q26 0 26 24 q-8 -10 -18 -12 q-4 8 -14 6 q-10 2 -22 10z" fill="#6B4226"/>
+    <circle cx="-9" cy="-54" r="3.2" fill="${C.enc}"/><circle cx="9" cy="-54" r="3.2" fill="${C.enc}"/>
+    <circle cx="-15" cy="-45" r="5" fill="#FF9F8A" opacity=".5"/><circle cx="15" cy="-45" r="5" fill="#FF9F8A" opacity=".5"/>
+    ${content?`<path d="M-8 -42 q8 8 16 0" stroke="${C.enc}" stroke-width="2.8" fill="none" stroke-linecap="round"/>`:`<path d="M-6 -40 q6 -4 12 0" stroke="${C.enc}" stroke-width="2.8" fill="none" stroke-linecap="round"/>`}
+  </g>`;
+}
+const ecole=(x,y)=>`<g transform="translate(${x},${y})"><rect x="-120" y="-130" width="240" height="140" fill="#F4D9B0" stroke="#C99E66" stroke-width="3"/><path d="M-136 -128 L0 -200 L136 -128z" fill="${C.cor}"/><circle cx="0" cy="-152" r="16" fill="#fff" stroke="${C.enc}" stroke-width="2"/><path d="M0 -152 v-9 M0 -152 h7" stroke="${C.enc}" stroke-width="2.5" stroke-linecap="round"/><text x="0" y="-104" text-anchor="middle" font-family="Fredoka,sans-serif" font-weight="700" font-size="22" fill="#2B2A3D">ÉCOLE</text><rect x="-22" y="-60" width="44" height="70" rx="20" fill="#3E7BD6"/>${[-86,58].map(a=>`<rect x="${a}" y="-80" width="30" height="30" fill="#BFE3F2" stroke="#fff" stroke-width="4"/>`).join('')}</g>`;
+const classe=()=>`<rect width="640" height="400" fill="#FBEBD3"/><rect y="300" width="640" height="100" fill="#D9B08C"/><rect x="150" y="40" width="340" height="150" rx="8" fill="#3F6B5A" stroke="#9C6A3C" stroke-width="8"/><text x="320" y="125" text-anchor="middle" font-family="Fredoka,sans-serif" font-size="48" fill="#fff">A B C</text><rect x="40" y="70" width="70" height="50" fill="#fff" transform="rotate(-6 75 95)"/><rect x="540" y="80" width="70" height="50" fill="#fff" transform="rotate(5 575 105)"/>`;
+const table=(x,y)=>`<g transform="translate(${x},${y})"><rect x="-110" y="-12" width="220" height="16" rx="6" fill="#E58A4B"/><rect x="-96" y="4" width="10" height="50" fill="#C46B30"/><rect x="86" y="4" width="10" height="50" fill="#C46B30"/><rect x="-60" y="-34" width="120" height="24" fill="#fff" transform="rotate(-3)"/><path d="M-40 -22 q20 -12 40 0 q14 -14 26 0" stroke="${C.pist}" stroke-width="6" fill="none" stroke-linecap="round"/>${['#FF7A59','#3E7BD6','#FFC93C','#7CC46A'].map((c,i)=>`<rect x="${70+i*8}" y="-30" width="6" height="22" rx="2" fill="${c}"/>`).join('')}</g>`;
+const ballon=(x,y)=>`<g class="touche" data-son="ding" transform="translate(${x},${y})"><circle r="18" fill="${C.cor}"/><path d="M-18 0 q18 -10 36 0 M0 -18 q-8 18 0 36" stroke="#fff" stroke-width="3" fill="none"/></g>`;
+const maison=(x,y)=>`<g transform="translate(${x},${y})"><rect x="-70" y="-80" width="140" height="90" fill="#FFF3C4" stroke="#D9A41E" stroke-width="3"/><path d="M-84 -78 L0 -140 L84 -78z" fill="#8E7CC3"/><rect x="-16" y="-40" width="32" height="50" rx="4" fill="#9C6A3C"/><rect x="28" y="-62" width="26" height="26" fill="#BFE3F2" stroke="#fff" stroke-width="3"/></g>`;
+
 /* ---------- Les histoires ---------- */
 const HISTOIRES=[
+ {id:'noa',titre:'Noa va à l’école',sous:'Le premier jour de Noa',
+  couverture:()=>svg(fond()+soleil(90,70)+ecole(470,300)+garcon(220,290,1.3,{cartable:true})+dragon(110,300,.8)),
+  pages:[
+   ['Voici Noa. Noa a trois ans, et aujourd’hui, c’est son premier jour d’école !',()=>fond()+soleil()+nuage(140,70)+maison(470,310)+garcon(230,290,1.6)],
+   ['Noa met son petit cartable sur son dos. Il a un peu peur.',()=>fond()+soleil()+maison(480,310)+garcon(250,290,1.6,{cartable:true,content:false})],
+   ['Pistache arrive en volant. « N’aie pas peur, Noa, on vient avec toi ! »',()=>fond()+soleil()+`<g class="flotte">${dragon(170,170,1)}</g>`+garcon(380,300,1.4,{cartable:true,content:false})+chienne(520,310,1)],
+   ['Voici l’école. La maîtresse ouvre la porte et dit : « Bonjour, Noa ! »',()=>fond()+soleil(90,70)+ecole(440,300)+garcon(200,300,1.3,{cartable:true,bras:true})+chienne(90,320,.9)],
+   ['En classe, Noa dessine un grand dragon vert avec des crayons de toutes les couleurs.',()=>classe()+garcon(320,300,1.4)+table(320,310)],
+   ['À la récréation, Noa joue au ballon avec ses nouveaux copains. Qu’il est content !',()=>fond()+soleil()+nuage(400,80)+garcon(220,290,1.4,{bras:true})+ballon(340,210)+chienne(470,300,1.1)],
+   ['Le soir, Noa fait un gros câlin à Pistache. « Demain, je retourne à l’école ! »',()=>fond('#FFD9A8')+`<circle cx="560" cy="250" r="44" fill="#FF9F5A"/>`+maison(500,310)+dragon(180,290,1.2,{yeux:'fermes'})+garcon(300,300,1.3,{bras:true})],
+  ]},
  {id:'hoquet',titre:'Pistache a le hoquet',sous:'Une histoire qui fait des bulles',
   couverture:()=>svg(fond()+soleil()+nuage(150,80)+dragon(300,280,1.4,{hoquet:true})),
   pages:[
