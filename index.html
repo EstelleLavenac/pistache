@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#8BCF4E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Pistache">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Les histoires de Pistache</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Andika:wght@400;700&display=swap">
+<style>
+/* Livre d'images plein écran : une scène illustrée, une phrase en grosses lettres, deux énormes flèches. Look unique, chaud, assumé. */
+:root{
+  --ciel:#BFE3F2; --nuit:#26305C; --herbe:#7CC46A; --herbe2:#5BA552;
+  --pistache:#8BCF4E; --pistache-f:#4E9A2C; --soleil:#FFC93C; --corail:#FF7A59;
+  --papier:#FFF8EC; --encre:#2B2A3D; --doux:#6B6880;
+  --display:"Fredoka","Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --lecture:"Andika","Verdana",system-ui,sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{margin:0;background:var(--papier);color:var(--encre);font-family:var(--lecture);padding-inline:16px;-webkit-tap-highlight-color:transparent;user-select:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;touch-action:manipulation}
+button:focus-visible{outline:4px solid var(--corail);outline-offset:3px}
+.app{max-width:960px;margin:0 auto;padding-block:16px 24px;display:flex;flex-direction:column;gap:16px;min-height:100%;box-sizing:border-box}
+
+/* Accueil */
+.tete{display:flex;align-items:center;gap:14px}
+.tete svg{width:84px;height:84px;flex:none}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(2rem,6vw,3.2rem);line-height:1;margin:0;color:var(--pistache-f);text-wrap:balance}
+.tete p{margin:.25rem 0 0;color:var(--doux);font-size:1.05rem}
+.etageres{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.livre{display:flex;flex-direction:column;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 6px 0 rgba(43,42,61,.12);text-align:left;transition:transform .15s}
+.livre:hover{transform:translateY(-3px) rotate(-.6deg)}
+.livre:active{transform:scale(.97)}
+.livre svg{display:block;width:100%;height:auto;aspect-ratio:16/10}
+.livre span{font-family:var(--display);font-weight:600;font-size:1.35rem;padding:12px 16px 16px;line-height:1.15}
+.livre small{display:block;font-family:var(--lecture);font-weight:400;font-size:.9rem;color:var(--doux);margin-top:4px}
+.astuce{color:var(--doux);font-size:.95rem;margin:0;text-align:center}
+
+/* Lecture */
+.lecture{display:flex;flex-direction:column;gap:14px;flex:1}
+.barre{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.rond{width:56px;height:56px;border-radius:50%;background:#fff;box-shadow:0 4px 0 rgba(43,42,61,.14);display:grid;place-items:center;font-size:1.6rem;flex:none}
+.rond svg{width:28px;height:28px}
+.rond.actif{background:var(--soleil)}
+.points{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.points i{width:14px;height:14px;border-radius:50%;background:#E4DCCB;transition:background .2s,transform .2s}
+.points i.on{background:var(--corail);transform:scale(1.25)}
+.scene{position:relative;border-radius:26px;overflow:hidden;box-shadow:0 8px 0 rgba(43,42,61,.12);background:var(--ciel)}
+.scene svg{display:block;width:100%;height:auto;aspect-ratio:16/10;max-width:100%}
+.scene .touche{cursor:pointer}
+.texte{font-size:clamp(1.35rem,3.6vw,2rem);line-height:1.45;margin:0;text-align:center;min-height:3em;text-wrap:balance;padding-inline:4px}
+.texte .mot.lu{color:var(--corail)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.fleche{width:84px;height:84px;border-radius:50%;background:var(--pistache);box-shadow:0 6px 0 var(--pistache-f);display:grid;place-items:center;transition:transform .1s}
+.fleche:active{transform:translateY(4px);box-shadow:0 2px 0 var(--pistache-f)}
+.fleche[disabled]{opacity:.3}
+.fleche svg{width:40px;height:40px}
+.lire{font-family:var(--display);font-weight:600;font-size:1.25rem;background:var(--soleil);border-radius:999px;padding:16px 26px;box-shadow:0 5px 0 #D9A41E;display:flex;align-items:center;gap:10px}
+.lire svg{width:26px;height:26px}
+.fin{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+@keyframes flotte{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes saute{0%{transform:translateY(0) scale(1)}40%{transform:translateY(-18px) scale(1.06)}100%{transform:translateY(0) scale(1)}}
+@keyframes scintille{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes bulle{0%{transform:translateY(0);opacity:.9}100%{transform:translateY(-60px);opacity:0}}
+.flotte{animation:flotte 3s ease-in-out infinite;transform-box:fill-box}
+.saute{animation:saute .5s ease-out;transform-box:fill-box;transform-origin:center bottom}
+.etoile{animation:scintille 2.4s ease-in-out infinite}
+.bulle{animation:bulle 1.4s ease-out forwards;transform-box:fill-box}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:520px){.fleche{width:68px;height:68px}.lire{padding:14px 18px;font-size:1.1rem}}
+</style>
+
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} img{max-width:100%} [hidden]{display:none!important} body{overscroll-behavior:none}</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+/* ---------- Dessins (formes simples, personnages originaux) ---------- */
+const C={herbe:'#7CC46A',herbe2:'#5BA552',pist:'#8BCF4E',pistF:'#4E9A2C',ventre:'#F6E7A6',sol:'#FFC93C',cor:'#FF7A59',enc:'#2B2A3D',blanc:'#fff'};
+
+function dragon(x,y,s=1,{yeux='ouverts',flamme=false,ailes=true,hoquet=false}={}){
+  const oeil = yeux==='fermes'
+    ? `<path d="M30 -38 q6 5 12 0" stroke="${C.enc}" stroke-width="3" fill="none" stroke-linecap="round"/>`
+    : `<circle cx="36" cy="-38" r="7" fill="${C.blanc}"/><circle cx="38" cy="-37" r="4" fill="${C.enc}"/><circle cx="39.5" cy="-38.5" r="1.4" fill="${C.blanc}"/>`;
+  const feu = flamme ? `<g transform="translate(66,-22)"><path d="M0 0 q18 -14 34 -2 q-8 4 -2 8 q-16 8 -32 -6z" fill="${C.cor}"/><path d="M4 0 q10 -7 20 0 q-10 6 -20 0z" fill="${C.sol}"/></g>`:'';
+  const hic = hoquet ? `<g transform="translate(70,-30)"><circle r="4" fill="${C.sol}"/><circle cx="12" cy="-8" r="3" fill="${C.cor}"/><circle cx="6" cy="-18" r="2.5" fill="${C.sol}"/></g>`:'';
+  return `<g class="touche dragon" data-son="dragon" transform="translate(${x},${y}) scale(${s})">
+    <g class="corps">
+    <path d="M-40 10 q-40 10 -52 -12 q14 6 22 -2" fill="${C.pist}" stroke="${C.pistF}" stroke-width="3"/>
+    <path d="M-92 -2 l-8 -12 l14 4z" fill="${C.cor}"/>
+    ${ailes?`<path d="M-14 -30 q-30 -46 -54 -30 q14 4 10 14 q12 -2 14 10 q12 -4 30 6z" fill="#B6E38A" stroke="${C.pistF}" stroke-width="3"/>`:''}
+    <ellipse cx="-6" cy="0" rx="44" ry="34" fill="${C.pist}" stroke="${C.pistF}" stroke-width="3"/>
+    <ellipse cx="2" cy="6" rx="26" ry="22" fill="${C.ventre}"/>
+    <path d="M-6 16 h10 M-6 4 h12 M-4 -8 h10" stroke="#E2CC74" stroke-width="2.5" stroke-linecap="round"/>
+    <rect x="-34" y="22" width="16" height="16" rx="7" fill="${C.pist}" stroke="${C.pistF}" stroke-width="3"/>
+    <rect x="8" y="22" width="16" height="16" rx="7" fill="${C.pist}" stroke="${C.pistF}" stroke-width="3"/>
+    <path d="M6 -48 l-4 -18 l12 10 l4 -16 l8 16 l10 -8 l-2 18z" fill="${C.cor}"/>
+    <ellipse cx="38" cy="-32" rx="34" ry="28" fill="${C.pist}" stroke="${C.pistF}" stroke-width="3"/>
+    <path d="M22 -58 q-4 -14 6 -18 q0 10 4 16z" fill="${C.sol}" stroke="#D9A41E" stroke-width="2"/>
+    <path d="M44 -60 q2 -14 12 -14 q-4 8 -2 16z" fill="${C.sol}" stroke="#D9A41E" stroke-width="2"/>
+    ${oeil}
+    <circle cx="62" cy="-28" r="2.6" fill="${C.pistF}"/>
+    <path d="M44 -16 q10 6 20 -2" stroke="${C.enc}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <circle cx="26" cy="-22" r="6" fill="#FF9F8A" opacity=".6"/>
+    </g>${feu}${hic}</g>`;
+}
+function chienne(x,y,s=1,{casque=false}={}){
+  return `<g class="touche" data-son="ouaf" transform="translate(${x},${y}) scale(${s})">
+    <path d="M-30 4 q-18 -10 -20 -24" stroke="#C98A4B" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <ellipse cx="0" cy="8" rx="34" ry="24" fill="#E6A866" stroke="#B87638" stroke-width="3"/>
+    <rect x="-24" y="20" width="12" height="18" rx="6" fill="#E6A866" stroke="#B87638" stroke-width="3"/>
+    <rect x="12" y="20" width="12" height="18" rx="6" fill="#E6A866" stroke="#B87638" stroke-width="3"/>
+    <circle cx="24" cy="-22" r="26" fill="#E6A866" stroke="#B87638" stroke-width="3"/>
+    <ellipse cx="38" cy="-14" rx="14" ry="10" fill="#FBE3C4"/>
+    <ellipse cx="48" cy="-18" rx="5" ry="4" fill="${C.enc}"/>
+    <path d="M4 -40 q-16 0 -12 26 q10 -4 14 -18z" fill="#9C5E2C"/>
+    <path d="M36 -44 q14 -8 18 6 q-8 2 -14 4z" fill="#9C5E2C"/>
+    <circle cx="28" cy="-28" r="4" fill="${C.enc}"/><circle cx="29.5" cy="-29.5" r="1.3" fill="#fff"/>
+    <path d="M38 -6 q4 8 10 2" stroke="${C.enc}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M12 -2 q12 6 24 0" stroke="#3E7BD6" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <circle cx="24" cy="4" r="5" fill="${C.sol}" stroke="#D9A41E" stroke-width="2"/>
+    ${casque?`<path d="M2 -40 q20 -28 46 -6 z" fill="${C.cor}" stroke="#C9553A" stroke-width="2"/>`:''}
+  </g>`;
+}
+function chaton(x,y,s=1){
+  return `<g class="touche" data-son="miaou" transform="translate(${x},${y}) scale(${s})">
+    <path d="M14 6 q14 -4 12 -18" stroke="#9AA0AE" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="0" cy="8" rx="16" ry="12" fill="#C7CCD6" stroke="#8C92A1" stroke-width="2"/>
+    <circle cx="-6" cy="-10" r="13" fill="#C7CCD6" stroke="#8C92A1" stroke-width="2"/>
+    <path d="M-17 -16 l2 -12 l8 7z M5 -16 l-2 -12 l-8 7z" fill="#C7CCD6" stroke="#8C92A1" stroke-width="2"/>
+    <circle cx="-11" cy="-11" r="2.2" fill="${C.enc}"/><circle cx="-1" cy="-11" r="2.2" fill="${C.enc}"/>
+    <path d="M-8 -5 q2 2 4 0" stroke="${C.enc}" stroke-width="1.6" fill="none"/>
+  </g>`;
+}
+const fond=(ciel='#BFE3F2',sol=C.herbe)=>`<rect width="640" height="400" fill="${ciel}"/>
+  <path d="M0 300 q160 -60 320 -10 t320 -20 V400 H0z" fill="${C.herbe2}"/>
+  <path d="M0 330 q200 -40 400 0 t240 -10 V400 H0z" fill="${sol}"/>`;
+const soleil=(x=560,y=70)=>`<g class="touche" data-son="ding"><circle cx="${x}" cy="${y}" r="36" fill="${C.sol}"/><circle cx="${x}" cy="${y}" r="48" fill="${C.sol}" opacity=".25"/></g>`;
+const lune=(x=540,y=70)=>`<circle cx="${x}" cy="${y}" r="32" fill="#FFF3C4"/><circle cx="${x+14}" cy="${y-8}" r="28" fill="#26305C"/>`;
+const etoiles=()=>[[60,50],[140,90],[230,40],[330,80],[420,30],[470,110],[90,140],[280,130],[600,150]].map(([x,y],i)=>`<circle class="etoile" style="animation-delay:${i*.3}s" cx="${x}" cy="${y}" r="${2.5+i%3}" fill="#FFF3C4"/>`).join('');
+const nuage=(x,y,s=1)=>`<g class="flotte" transform="translate(${x},${y}) scale(${s})"><g><ellipse cx="0" cy="0" rx="40" ry="18" fill="#fff"/><ellipse cx="-22" cy="-8" rx="20" ry="16" fill="#fff"/><ellipse cx="18" cy="-12" rx="22" ry="18" fill="#fff"/></g></g>`;
+const arbre=(x,y,s=1)=>`<g transform="translate(${x},${y}) scale(${s})"><rect x="-14" y="-10" width="28" height="140" rx="10" fill="#9C6A3C"/><path d="M8 20 l40 -30" stroke="#9C6A3C" stroke-width="12" stroke-linecap="round"/><circle cx="0" cy="-60" r="70" fill="#5BA552"/><circle cx="-50" cy="-20" r="44" fill="#6DB85C"/><circle cx="50" cy="-30" r="48" fill="#6DB85C"/><circle cx="-20" cy="-80" r="10" fill="${C.cor}"/><circle cx="34" cy="-70" r="10" fill="${C.cor}"/></g>`;
+const gateau=(x,y,bougies=false)=>`<g transform="translate(${x},${y})"><rect x="-50" y="-30" width="100" height="44" rx="10" fill="#F7B6C8" stroke="#D87F9A" stroke-width="3"/><path d="M-50 -18 q12 10 25 0 t25 0 t25 0 t25 0" stroke="#fff" stroke-width="6" fill="none"/><rect x="-60" y="12" width="120" height="10" rx="5" fill="#fff"/>${[-24,0,24].map(b=>`<rect x="${b-3}" y="-52" width="6" height="22" rx="2" fill="#7FB8F0"/>${bougies?`<path d="M${b} -66 q8 8 0 14 q-8 -6 0 -14z" fill="${C.sol}"/>`:''}`).join('')}</g>`;
+const flaque=(x,y)=>`<ellipse cx="${x}" cy="${y}" rx="60" ry="14" fill="#7FB8F0" opacity=".8"/>`;
+const bulles=(x,y)=>[0,1,2,3].map(i=>`<circle class="bulle" style="animation-delay:${i*.25}s" cx="${x+i*14-20}" cy="${y-i*6}" r="${6+i*2}" fill="#fff" opacity=".85" stroke="#9fd3ee" stroke-width="2"/>`).join('');
+const lit=(x,y)=>`<g transform="translate(${x},${y})"><rect x="-120" y="-10" width="240" height="60" rx="16" fill="#8E7CC3"/><rect x="-130" y="-60" width="26" height="110" rx="10" fill="#6B5AA5"/><rect x="104" y="-30" width="26" height="80" rx="10" fill="#6B5AA5"/><ellipse cx="-80" cy="-14" rx="30" ry="16" fill="#fff"/></g>`;
+const couverture=(x,y)=>`<path transform="translate(${x},${y})" d="M-100 -30 q100 -30 210 0 v40 h-210z" fill="${C.sol}"/><g transform="translate(${x},${y})">${[-70,-30,10,50,90].map(c=>`<circle cx="${c}" cy="-6" r="6" fill="${C.cor}"/>`).join('')}</g>`;
+const svg=inner=>`<svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg" role="img">${inner}</svg>`;
+
+/* ---------- Les histoires ---------- */
+const HISTOIRES=[
+ {id:'hoquet',titre:'Pistache a le hoquet',sous:'Une histoire qui fait des bulles',
+  couverture:()=>svg(fond()+soleil()+nuage(150,80)+dragon(300,280,1.4,{hoquet:true})),
+  pages:[
+   ['Voici Pistache. Pistache est un petit dragon tout vert.',()=>fond()+soleil()+nuage(140,70)+nuage(400,110,.7)+dragon(300,280,1.5)],
+   ['Ce matin, Pistache veut cracher du feu. Il souffle très fort… et fait HIC !',()=>fond()+soleil()+nuage(140,70)+dragon(260,280,1.5,{hoquet:true})],
+   ['HIC ! HIC ! Au lieu du feu, il sort de toutes petites étincelles.',()=>fond()+soleil()+dragon(260,280,1.5,{hoquet:true})+`<g transform="translate(420,170)">${['#FFC93C','#FF7A59','#FFC93C'].map((c,i)=>`<path d="M${i*40} ${i%2*30} l6 14 l14 2 l-10 10 l2 14 l-12 -8 l-12 8 l2 -14 l-10 -10 l14 -2z" fill="${c}"/>`).join('')}</g>`],
+   ['Son amie Biscotte la chienne arrive en courant. « Bois un grand verre d’eau ! »',()=>fond()+soleil()+dragon(200,290,1.3,{hoquet:true})+chienne(470,300,1.3)],
+   ['Glou, glou, glou. Pistache boit tout doucement…',()=>fond()+soleil()+flaque(320,350)+dragon(220,290,1.3,{yeux:'fermes'})+chienne(480,300,1.2)],
+   ['Plus de hoquet ! Et quand Pistache rit, il fait des bulles. Pop, pop, pop !',()=>fond()+soleil()+nuage(140,70)+dragon(240,290,1.4)+bulles(360,200)+chienne(500,300,1.1)],
+  ]},
+ {id:'chaton',titre:'Au secours, petit chaton !',sous:'Une histoire de sauvetage',
+  couverture:()=>svg(fond()+arbre(460,240,1)+chaton(500,140,1.4)+dragon(200,290,1.2)),
+  pages:[
+   ['Miaou ! Miaou ! Un petit chaton est coincé tout en haut d’un arbre.',()=>fond()+soleil(90,70)+arbre(420,250,1.1)+chaton(468,128,1.5)],
+   ['Biscotte met son casque. « Pas de panique, on arrive ! »',()=>fond()+soleil(90,70)+arbre(480,250,1)+chaton(522,142,1.3)+chienne(220,300,1.5,{casque:true})],
+   ['Mais l’arbre est bien trop haut pour une chienne. Que faire ?',()=>fond()+soleil(90,70)+arbre(420,250,1.1)+chaton(468,128,1.4)+chienne(230,300,1.3,{casque:true})],
+   ['Pistache ouvre ses ailes. Flap, flap, flap ! Il monte, il monte…',()=>fond()+soleil(90,70)+arbre(460,250,1.1)+chaton(508,128,1.4)+`<g class="flotte">${dragon(250,190,1.1)}</g>`],
+   ['Doucement, il prend le chaton sur son dos et redescend.',()=>fond()+soleil(90,70)+arbre(500,250,1)+dragon(260,290,1.3)+chaton(270,214,1.3)],
+   ['Bravo l’équipe ! Le chaton fait un gros câlin à ses sauveteurs.',()=>fond()+soleil(90,70)+nuage(400,80)+dragon(220,290,1.2)+chaton(345,316,1.3)+chienne(470,300,1.2,{casque:true})],
+  ]},
+ {id:'gateau',titre:'Le gâteau de Biscotte',sous:'Une histoire d’anniversaire',
+  couverture:()=>svg(fond('#FFE3EC')+gateau(320,300,true)+dragon(150,290,1)+chienne(500,300,1)),
+  pages:[
+   ['Aujourd’hui, c’est l’anniversaire de Biscotte ! Wouf, wouf !',()=>fond('#FFE3EC')+chienne(320,300,1.6)],
+   ['Pistache a préparé un gros gâteau rose avec trois bougies.',()=>fond('#FFE3EC')+gateau(420,310)+dragon(200,290,1.3)],
+   ['Mais… oh non ! Personne n’a d’allumettes.',()=>fond('#FFE3EC')+gateau(330,310)+dragon(150,290,1.1)+chienne(510,300,1.1)],
+   ['Pistache a une idée. Il souffle une toute petite flamme… fffff !',()=>fond('#FFE3EC')+gateau(410,310,true)+dragon(220,290,1.2,{flamme:true})],
+   ['Joyeux anniversaire, Biscotte ! Fais un vœu et souffle très fort !',()=>fond('#FFE3EC')+nuage(140,70)+gateau(330,310,true)+dragon(150,290,1.1)+chienne(510,300,1.1)],
+  ]},
+ {id:'dodo',titre:'Bonne nuit, Pistache',sous:'Pour s’endormir tout doux',
+  couverture:()=>svg(fond('#26305C','#3C5A3A')+lune()+etoiles()+dragon(320,280,1.2,{yeux:'fermes'})),
+  pages:[
+   ['Le soleil se couche. Le ciel devient tout bleu foncé.',()=>fond('#3B4A86','#4C7A48')+lune()+etoiles()+dragon(300,285,1.3)],
+   ['Pistache compte les étoiles. Une, deux, trois…',()=>fond('#26305C','#3C5A3A')+lune()+etoiles()+dragon(280,285,1.3)],
+   ['Il fait un grand bâillement. Aaaaah !',()=>fond('#26305C','#3C5A3A')+lune()+etoiles()+dragon(280,285,1.3,{yeux:'fermes'})],
+   ['Biscotte lui apporte sa petite couverture.',()=>fond('#26305C','#3C5A3A')+lune()+etoiles()+lit(320,320)+dragon(300,300,1,{yeux:'fermes',ailes:false})+chienne(520,320,1)],
+   ['Bonne nuit, Pistache. Bonne nuit, Biscotte. Bonne nuit, toi aussi.',()=>fond('#26305C','#3C5A3A')+lune()+etoiles()+lit(320,320)+dragon(300,300,1,{yeux:'fermes',ailes:false})+couverture(320,320)],
+  ]},
+];
+
+/* ---------- Sons (synthétisés, aucun fichier) ---------- */
+let ac;
+function son(type){
+  try{ ac=ac||new (window.AudioContext||window.webkitAudioContext)(); if(ac.state==='suspended') ac.resume(); }catch(e){return}
+  const t=ac.currentTime, o=ac.createOscillator(), g=ac.createGain(); o.connect(g); g.connect(ac.destination);
+  const env=(a,d)=>{g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(a,t+.03);g.gain.exponentialRampToValueAtTime(0.0001,t+d)};
+  if(type==='dragon'){o.type='sawtooth';o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(70,t+.6);env(.25,.7);o.stop(t+.75)}
+  else if(type==='ouaf'){o.type='square';o.frequency.setValueAtTime(380,t);o.frequency.exponentialRampToValueAtTime(180,t+.15);env(.2,.2);o.stop(t+.22)}
+  else if(type==='miaou'){o.type='triangle';o.frequency.setValueAtTime(600,t);o.frequency.linearRampToValueAtTime(900,t+.2);o.frequency.linearRampToValueAtTime(500,t+.5);env(.25,.55);o.stop(t+.6)}
+  else {o.type='sine';o.frequency.setValueAtTime(880,t);o.frequency.setValueAtTime(1320,t+.12);env(.2,.4);o.stop(t+.45)}
+  o.start(t);
+}
+
+/* ---------- Voix ---------- */
+const parle = 'speechSynthesis' in window;
+let voixFR=null;
+function choisirVoix(){ if(!parle) return; const v=speechSynthesis.getVoices(); voixFR=v.find(x=>/^fr(-|_)FR/i.test(x.lang))||v.find(x=>/^fr/i.test(x.lang))||null; }
+if(parle){ choisirVoix(); speechSynthesis.onvoiceschanged=choisirVoix; }
+let enCours=null, voixDebloquee=false;
+function debloquerVoix(){ // iPhone/iPad : la voix doit démarrer pendant un toucher
+  if(!parle||voixDebloquee) return; voixDebloquee=true;
+  try{ const u=new SpeechSynthesisUtterance(' '); u.volume=0; u.lang='fr-FR'; speechSynthesis.speak(u);}catch(e){}
+}
+function avertir(msg){
+  let b=document.getElementById('avert'); if(!b){ b=document.createElement('p'); b.id='avert'; b.className='astuce'; b.style.cssText='background:#FFE7DF;color:#8A3A22;border-radius:14px;padding:10px 14px'; document.querySelector('.lecture')?.appendChild(b); }
+  b.textContent=msg;
+}
+function lireTexte(txt,el,fini){
+  if(!parle){avertir("Ce navigateur ne sait pas lire à voix haute. Essaie avec Chrome ou Safari à jour.");fini&&fini();return}
+  if(speechSynthesis.speaking||speechSynthesis.pending) speechSynthesis.cancel();
+  speechSynthesis.resume();
+  const u=new SpeechSynthesisUtterance(txt.replace(/[«»]/g,'')); u.lang='fr-FR'; u.rate=.85; u.pitch=1.15; u.volume=1; if(voixFR) u.voice=voixFR;
+  enCours=u; // garde une référence, sinon Chrome coupe la voix
+  let demarre=false; u.onstart=()=>{demarre=true;document.getElementById('avert')?.remove()};
+  u.onerror=e=>{ if(e.error!=='interrupted'&&e.error!=='canceled') avertir("La voix n’a pas pu démarrer ("+e.error+"). Vérifie que le son de l’appareil est allumé."); };
+  setTimeout(()=>{ if(!demarre&&enCours===u) avertir(speechSynthesis.getVoices().length? "Pas de son ? Monte le volume, et sur iPhone/iPad désactive le mode silencieux." : "Aucune voix n’est installée sur cet appareil. Essaie dans Chrome ou Safari."); },2500);
+  const mots=[...el.querySelectorAll('.mot')];
+  u.onboundary=e=>{ if(e.name&&e.name!=='word')return; let n=0,pos=0; for(const m of mots){ if(pos<=e.charIndex) n++; pos+=m.textContent.length+1; } mots.forEach((m,i)=>m.classList.toggle('lu',i<n)); };
+  u.onend=()=>{mots.forEach(m=>m.classList.add('lu'));fini&&fini()};
+  setTimeout(()=>speechSynthesis.speak(u),80);
+}
+
+/* ---------- Écrans ---------- */
+const app=document.getElementById('app');
+const ic={
+ gauche:'<svg viewBox="0 0 24 24"><path d="M15 4 7 12l8 8" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ droite:'<svg viewBox="0 0 24 24"><path d="m9 4 8 8-8 8" stroke="#fff" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+ maison:'<svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="#4E9A2C"/></svg>',
+ voix:'<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z" fill="#2B2A3D"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="#2B2A3D" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
+ encore:'<svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5" stroke="#2B2A3D" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+};
+let auto=false;
+
+function accueil(){
+  if(parle) speechSynthesis.cancel(); auto=false;
+  app.innerHTML=`<header class="tete">${svg(dragon(330,250,2.6)).replace('viewBox="0 0 640 400"','viewBox="140 30 420 340"')}
+    <div><h1>Les histoires de Pistache</h1><p>Choisis une histoire !</p></div></header>
+    <section class="etageres">${HISTOIRES.map(h=>`<button class="livre" data-id="${h.id}" id="livre-${h.id}">${h.couverture()}<span>${h.titre}<small>${h.sous}</small></span></button>`).join('')}</section>
+    <p class="astuce">Dans les histoires, touche Pistache, Biscotte ou le chaton pour les entendre.</p>`;
+  app.querySelectorAll('.livre').forEach(b=>b.onclick=()=>{debloquerVoix();son('ding');ouvrir(b.dataset.id,0)});
+}
+
+function ouvrir(id,p){
+  const h=HISTOIRES.find(x=>x.id===id); const n=h.pages.length;
+  if(p>=n) return finale(h);
+  const [txt,scene]=h.pages[p];
+  app.innerHTML=`<div class="lecture">
+    <div class="barre"><button class="rond" id="maison" aria-label="Retour aux histoires">${ic.maison}</button>
+      <div class="points">${h.pages.map((_,i)=>`<i class="${i<=p?'on':''}"></i>`).join('')}</div>
+      <button class="rond ${auto?'actif':''}" id="auto" aria-label="Lecture automatique">${ic.voix}</button></div>
+    <div class="scene" id="scene">${svg(scene())}</div>
+    <p class="texte" id="texte">${txt.split(' ').map(m=>`<span class="mot">${m}</span>`).join(' ')}</p>
+    <div class="nav"><button class="fleche" id="prec" aria-label="Page précédente" ${p===0?'disabled':''}>${ic.gauche}</button>
+      ${parle?`<button class="lire" id="lire">${ic.voix}Lis-moi</button>`:''}
+      <button class="fleche" id="suiv" aria-label="Page suivante">${ic.droite}</button></div></div>`;
+  const texte=document.getElementById('texte');
+  document.getElementById('maison').onclick=accueil;
+  document.getElementById('prec').onclick=()=>ouvrir(id,p-1);
+  document.getElementById('suiv').onclick=()=>ouvrir(id,p+1);
+  const lire=document.getElementById('lire'); if(lire) lire.onclick=()=>{debloquerVoix();lireTexte(txt,texte)};
+  document.getElementById('auto').onclick=()=>{auto=!auto; document.getElementById('auto').classList.toggle('actif',auto); if(auto) lireTexte(txt,texte,()=>auto&&setTimeout(()=>auto&&ouvrir(id,p+1),900)); else if(parle) speechSynthesis.cancel();};
+  document.getElementById('scene').onclick=e=>{const t=e.target.closest('.touche'); if(!t) return; son(t.dataset.son); t.classList.remove('saute'); void t.getBBox; requestAnimationFrame(()=>t.classList.add('saute'));};
+  if(auto) lireTexte(txt,texte,()=>auto&&setTimeout(()=>auto&&ouvrir(id,p+1),900));
+}
+
+function finale(h){
+  auto=false;
+  app.innerHTML=`<div class="lecture">
+    <div class="barre"><button class="rond" id="maison" aria-label="Retour aux histoires">${ic.maison}</button><div></div><div style="width:56px"></div></div>
+    <div class="scene" id="scene">${svg(fond()+soleil()+nuage(140,70)+dragon(220,290,1.3,{flamme:true})+chienne(500,300,1.2)+bulles(330,170))}</div>
+    <p class="texte">Fin ! Bravo, tu as écouté toute l’histoire.</p>
+    <div class="fin"><button class="lire" id="encore">${ic.encore}Encore !</button><button class="lire" id="autre" style="background:var(--pistache);box-shadow:0 5px 0 var(--pistache-f)">Une autre histoire</button></div></div>`;
+  son('ding');
+  document.getElementById('maison').onclick=accueil;
+  document.getElementById('autre').onclick=accueil;
+  document.getElementById('encore').onclick=()=>ouvrir(h.id,0);
+  document.getElementById('scene').onclick=e=>{const t=e.target.closest('.touche'); if(t) son(t.dataset.son)};
+}
+
+document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight') document.getElementById('suiv')?.click(); if(e.key==='ArrowLeft') document.getElementById('prec')?.click(); });
+accueil();
+</script>
+
+<script>
+if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
