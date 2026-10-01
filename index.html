@@ -90,78 +90,100 @@ const C={herbe:'#7CC46A',herbe2:'#5BA552',pist:'#8BCF4E',pistF:'#4E9A2C',ventre:
 
 function teinte(h,a){const n=parseInt(h.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;const t=a<0?0:255,p=Math.abs(a);r=Math.round(r+(t-r)*p);g=Math.round(g+(t-g)*p);b=Math.round(b+(t-b)*p);return '#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
 function melange(h1,h2,t){const a=parseInt(h1.slice(1),16),b=parseInt(h2.slice(1),16);const f=s=>[(s>>16),(s>>8&255),(s&255)];const A=f(a),B=f(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('');}
-function oeil(cx,cy,r,{iris='gIris',cils=false}={}){
-  return `<ellipse cx="${cx}" cy="${cy}" rx="${r}" ry="${(r*1.2).toFixed(1)}" fill="#fff"/>
-  <circle cx="${(cx+r*.15).toFixed(1)}" cy="${(cy+r*.2).toFixed(1)}" r="${(r*.72).toFixed(1)}" fill="url(#${iris})"/>
-  <circle cx="${(cx+r*.18).toFixed(1)}" cy="${(cy+r*.24).toFixed(1)}" r="${(r*.38).toFixed(1)}" fill="#1B1626"/>
-  <circle cx="${(cx-r*.12).toFixed(1)}" cy="${(cy-r*.25).toFixed(1)}" r="${(r*.3).toFixed(1)}" fill="#fff"/>
-  <circle cx="${(cx+r*.45).toFixed(1)}" cy="${(cy+r*.55).toFixed(1)}" r="${(r*.13).toFixed(1)}" fill="#fff" opacity=".85"/>
-  <path d="M${(cx-r*.95).toFixed(1)} ${(cy-r*.35).toFixed(1)} Q${cx} ${(cy-r*1.62).toFixed(1)} ${(cx+r*.95).toFixed(1)} ${(cy-r*.35).toFixed(1)}" stroke="#2B2A3D" stroke-width="${(r*.16).toFixed(1)}" fill="none" stroke-linecap="round" opacity=".8"/>
-  ${cils?`<path d="M${cx+r*.9} ${cy-r*.75} l${r*.45} ${-r*.35} M${cx+r*.55} ${cy-r*1.05} l${r*.3} ${-r*.45}" stroke="#2B2A3D" stroke-width="${(r*.22).toFixed(1)}" stroke-linecap="round"/>`:''}`;
+function oeil(cx,cy,r,{iris='gIris',cils=false,sourcil='#5A3A22',dir=1}={}){
+  const ry=r*1.16, f=n=>(+n).toFixed(1);
+  return `<ellipse cx="${f(cx)}" cy="${f(cy+r*.12)}" rx="${f(r*1.05)}" ry="${f(ry*1.04)}" fill="#1B1530" opacity=".08"/>
+  <ellipse cx="${cx}" cy="${cy}" rx="${r}" ry="${f(ry)}" fill="url(#gBlanc)"/>
+  <circle cx="${f(cx+r*.06*dir)}" cy="${f(cy+r*.1)}" r="${f(r*.8)}" fill="url(#${iris})"/>
+  <circle cx="${f(cx+r*.06*dir)}" cy="${f(cy+r*.1)}" r="${f(r*.78)}" fill="none" stroke="#1B1626" stroke-opacity=".55" stroke-width="${f(r*.09)}"/>
+  <circle cx="${f(cx+r*.08*dir)}" cy="${f(cy+r*.13)}" r="${f(r*.42)}" fill="#120E1C"/>
+  <ellipse cx="${f(cx-r*.28)}" cy="${f(cy-r*.3)}" rx="${f(r*.28)}" ry="${f(r*.23)}" fill="#fff"/>
+  <circle cx="${f(cx+r*.36)}" cy="${f(cy+r*.42)}" r="${f(r*.11)}" fill="#fff" opacity=".9"/>
+  <path d="M${f(cx-r*1.02)} ${f(cy+r*.05)} A${r} ${f(ry)} 0 0 1 ${f(cx+r*1.02)} ${f(cy+r*.05)}" stroke="#2B2A3D" stroke-width="${f(r*.15)}" fill="none" stroke-linecap="round" opacity=".85"/>
+  ${cils?`<path d="M${f(cx+r*.9*dir)} ${f(cy-r*.55)} l${f(r*.42*dir)} ${f(-r*.3)} M${f(cx+r*.62*dir)} ${f(cy-r*.86)} l${f(r*.3*dir)} ${f(-r*.42)}" stroke="#2B2A3D" stroke-width="${f(r*.17)}" stroke-linecap="round"/>`:''}
+  ${sourcil?`<path d="M${f(cx-r*.85)} ${f(cy-ry*1.42-r*.14*dir)} Q${cx} ${f(cy-ry*1.78)} ${f(cx+r*.85)} ${f(cy-ry*1.42+r*.14*dir)}" stroke="${sourcil}" stroke-width="${f(r*.3)}" fill="none" stroke-linecap="round"/>`:''}`;
 }
-const oeilFerme=(cx,cy,r)=>`<path d="M${cx-r} ${cy} q${r} ${r*.9} ${2*r} 0" stroke="#2B2A3D" stroke-width="${(r*.3).toFixed(1)}" fill="none" stroke-linecap="round"/><path d="M${cx-r*.7} ${cy+r*.45} l-${r*.3} ${r*.35} M${cx} ${cy+r*.65} v${r*.4} M${cx+r*.7} ${cy+r*.45} l${r*.3} ${r*.35}" stroke="#2B2A3D" stroke-width="${(r*.2).toFixed(1)}" stroke-linecap="round"/>`;
+const oeilFerme=(cx,cy,r,brow='#3F7A22')=>`<path d="M${cx-r} ${cy} q${r} ${r*1} ${2*r} 0" stroke="#2B2A3D" stroke-width="${(r*.26).toFixed(1)}" fill="none" stroke-linecap="round"/><path d="M${cx-r*.6} ${cy+r*.5} l-${r*.3} ${r*.38} M${cx+r*.6} ${cy+r*.5} l${r*.3} ${r*.38}" stroke="#2B2A3D" stroke-width="${(r*.2).toFixed(1)}" stroke-linecap="round"/><path d="M${cx-r*.8} ${cy-r*1.2} q${r*.8} -${r*.4} ${r*1.6} 0" stroke="${brow}" stroke-width="${(r*.28).toFixed(1)}" fill="none" stroke-linecap="round"/>`;
 const ombreSol=(cx,cy,rx)=>`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${(rx*.16).toFixed(1)}" fill="#1E2A10" opacity=".2"/>`;
 function dragon(x,y,s=1,{yeux='ouverts',flamme=false,ailes=true,hoquet=false}={}){
-  const o = yeux==='fermes' ? oeilFerme(37,-40,10) : oeil(37,-42,11,{iris:'gIrisD'});
-  const feu = flamme ? `<g transform="translate(70,-22)"><path d="M0 0 q20 -18 40 -4 q-8 5 -2 10 q-20 10 -38 -6z" fill="url(#gFeu)"/><path d="M4 0 q12 -8 22 0 q-12 6 -22 0z" fill="#FFF3B0"/><circle cx="30" cy="-2" r="16" fill="url(#gHalo)"/></g>`:'';
-  const hic = hoquet ? `<g transform="translate(72,-32)"><circle r="5" fill="url(#gHalo)"/><circle r="3.5" fill="#FFE27A"/><circle cx="12" cy="-9" r="3" fill="#FF8A5C"/><circle cx="6" cy="-20" r="2.5" fill="#FFE27A"/></g>`:'';
+  const brow='#3F7A22';
+  const o = yeux==='fermes' ? oeilFerme(26,-38,9,brow)+oeilFerme(52,-38,9,brow) : oeil(25,-40,10.5,{iris:'gIrisD',sourcil:brow,dir:-1})+oeil(52,-40,10.5,{iris:'gIrisD',sourcil:brow,dir:1});
+  const feu = flamme ? `<g transform="translate(70,-14)"><circle cx="30" cy="-4" r="22" fill="url(#gHalo)"/><path d="M0 0 q20 -18 40 -4 q-8 5 -2 10 q-20 10 -38 -6z" fill="url(#gFeu)"/><path d="M4 0 q12 -8 22 0 q-12 6 -22 0z" fill="#FFF3B0"/></g>`:'';
+  const hic = hoquet ? `<g transform="translate(74,-22)"><circle r="6" fill="url(#gHalo)"/><circle r="3.5" fill="#FFE27A"/><circle cx="12" cy="-9" r="3" fill="#FF8A5C"/><circle cx="6" cy="-20" r="2.5" fill="#FFE27A"/></g>`:'';
   return `<g class="touche dragon" data-son="dragon" transform="translate(${x},${y}) scale(${s})">
-    ${ombreSol(-4,40,54)}
-    <g class="corps">
-    <path d="M-40 10 q-42 12 -56 -12 q16 8 24 -2" fill="url(#gPist)" stroke="#4E8F2C" stroke-width="2.5"/>
+    ${ombreSol(-4,40,56)}
+    <g class="corps" filter="url(#volume)">
+    <path d="M-40 10 q-42 12 -56 -12 q16 8 24 -2" fill="url(#gPist)" stroke="#3F7A22" stroke-width="2"/>
     <path d="M-96 -2 l-10 -14 l17 5z" fill="url(#gCrete)"/>
-    ${ailes?`<path d="M-14 -30 q-32 -50 -58 -32 q15 5 11 15 q13 -2 15 11 q13 -4 32 6z" fill="url(#gAile)" stroke="#4E8F2C" stroke-width="2.5"/><path d="M-30 -40 q-12 -8 -26 -14 M-24 -32 q-10 -2 -24 0" stroke="#7DBB4E" stroke-width="2" fill="none" opacity=".7"/>`:''}
-    <ellipse cx="-6" cy="0" rx="44" ry="35" fill="url(#gPist)" stroke="#4E8F2C" stroke-width="2.5"/>
-    <ellipse cx="2" cy="7" rx="26" ry="23" fill="url(#gVentre)"/>
-    <path d="M-8 18 q7 3 14 0 M-9 6 q8 3 16 0 M-7 -6 q7 3 13 0" stroke="#E0BE62" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <ellipse cx="-24" cy="-18" rx="16" ry="7" fill="#fff" opacity=".22" transform="rotate(-25 -24 -18)"/>
-    <rect x="-34" y="22" width="17" height="17" rx="8" fill="url(#gPist)" stroke="#4E8F2C" stroke-width="2.5"/>
-    <rect x="8" y="22" width="17" height="17" rx="8" fill="url(#gPist)" stroke="#4E8F2C" stroke-width="2.5"/>
-    <path d="M6 -50 l-4 -19 l12 10 l4 -17 l9 17 l10 -9 l-2 19z" fill="url(#gCrete)"/>
-    <ellipse cx="38" cy="-33" rx="36" ry="30" fill="url(#gPist)" stroke="#4E8F2C" stroke-width="2.5"/>
-    <ellipse cx="26" cy="-52" rx="15" ry="6" fill="#fff" opacity=".28" transform="rotate(-18 26 -52)"/>
-    <path d="M20 -60 q-5 -15 6 -20 q0 11 5 18z" fill="url(#gCorne)" stroke="#C99021" stroke-width="1.5"/>
-    <path d="M45 -62 q2 -15 13 -15 q-4 9 -2 17z" fill="url(#gCorne)" stroke="#C99021" stroke-width="1.5"/>
+    ${ailes?`<path d="M-14 -30 q-32 -50 -58 -32 q15 5 11 15 q13 -2 15 11 q13 -4 32 6z" fill="url(#gAile)" stroke="#3F7A22" stroke-width="2"/><path d="M-30 -40 q-12 -8 -26 -14 M-24 -32 q-10 -2 -24 0" stroke="#6FAE3E" stroke-width="2" fill="none" opacity=".8"/>`:''}
+    <ellipse cx="-6" cy="0" rx="44" ry="35" fill="url(#gPist)" stroke="#3F7A22" stroke-width="2"/>
+    <ellipse cx="-6" cy="0" rx="44" ry="35" fill="url(#ecailles)"/>
+    <ellipse cx="-6" cy="0" rx="44" ry="35" fill="url(#gRim)"/>
+    <ellipse cx="4" cy="8" rx="26" ry="23" fill="url(#gVentre)"/>
+    <path d="M-10 19 q9 4 18 0 M-11 7 q10 4 20 0 M-9 -5 q9 4 17 0" stroke="#DDB758" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="-26" cy="-18" rx="15" ry="6" fill="#fff" opacity=".35" transform="rotate(-25 -26 -18)"/>
+    <rect x="-34" y="22" width="17" height="17" rx="8" fill="url(#gPist)" stroke="#3F7A22" stroke-width="2"/>
+    <rect x="8" y="22" width="17" height="17" rx="8" fill="url(#gPist)" stroke="#3F7A22" stroke-width="2"/>
+    <path d="M-30 39 v-4 M-25 39 v-4 M12 39 v-4 M17 39 v-4" stroke="#F7F1DC" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M4 -54 l-4 -19 l12 10 l4 -17 l9 17 l10 -9 l-2 19z" fill="url(#gCrete)"/>
+    <ellipse cx="38" cy="-34" rx="38" ry="31" fill="url(#gPist)" stroke="#3F7A22" stroke-width="2"/>
+    <ellipse cx="38" cy="-34" rx="38" ry="31" fill="url(#ecailles)"/>
+    <ellipse cx="38" cy="-34" rx="38" ry="31" fill="url(#gRim)"/>
+    <ellipse cx="22" cy="-56" rx="14" ry="5" fill="#fff" opacity=".4" transform="rotate(-15 22 -56)"/>
+    <path d="M14 -60 q-6 -16 6 -22 q0 12 6 19z" fill="url(#gCorne)" stroke="#C99021" stroke-width="1.5"/>
+    <path d="M56 -63 q4 -16 16 -15 q-5 9 -4 18z" fill="url(#gCorne)" stroke="#C99021" stroke-width="1.5"/>
+    <ellipse cx="44" cy="-14" rx="26" ry="15" fill="url(#gMuseau)"/>
+    <ellipse cx="38" cy="-20" rx="3" ry="2.2" fill="#2E5E18"/><ellipse cx="51" cy="-20" rx="3" ry="2.2" fill="#2E5E18"/>
+    <path d="M28 -9 q16 12 32 0" stroke="#2B2A3D" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M38 -5 q6 6 12 0z" fill="#FF8C9A"/>
     ${o}
-    <ellipse cx="64" cy="-28" rx="2.4" ry="1.8" fill="#3F7A22"/>
-    <path d="M44 -15 q11 8 22 -2" stroke="#2B2A3D" stroke-width="2.8" fill="none" stroke-linecap="round"/>
-    <ellipse cx="22" cy="-22" rx="8" ry="5" fill="#FF8C7A" opacity=".45"/>
+    <ellipse cx="12" cy="-22" rx="7" ry="4.5" fill="#FF7F6E" opacity=".45"/><ellipse cx="66" cy="-22" rx="6" ry="4" fill="#FF7F6E" opacity=".4"/>
     </g>${feu}${hic}</g>`;
 }
 function chienne(x,y,s=1,{casque=false}={}){
   return `<g class="touche" data-son="ouaf" transform="translate(${x},${y}) scale(${s})">
     ${ombreSol(2,40,40)}
-    <path d="M-30 4 q-20 -10 -21 -26" stroke="url(#gChien)" stroke-width="8" fill="none" stroke-linecap="round"/>
-    <ellipse cx="0" cy="8" rx="34" ry="24" fill="url(#gChien)" stroke="#A9682F" stroke-width="2.5"/>
-    <ellipse cx="4" cy="14" rx="18" ry="12" fill="#FCE6C8" opacity=".9"/>
-    <rect x="-24" y="20" width="12" height="19" rx="6" fill="url(#gChien)" stroke="#A9682F" stroke-width="2.5"/>
-    <rect x="12" y="20" width="12" height="19" rx="6" fill="url(#gChien)" stroke="#A9682F" stroke-width="2.5"/>
-    <circle cx="24" cy="-22" r="27" fill="url(#gChien)" stroke="#A9682F" stroke-width="2.5"/>
-    <ellipse cx="14" cy="-38" rx="11" ry="5" fill="#fff" opacity=".25" transform="rotate(-20 14 -38)"/>
-    <ellipse cx="39" cy="-13" rx="15" ry="11" fill="#FCE6C8"/>
-    <ellipse cx="50" cy="-19" rx="5.5" ry="4.2" fill="#2B2A3D"/><ellipse cx="48.5" cy="-20.5" rx="1.8" ry="1.1" fill="#fff" opacity=".7"/>
-    <path d="M3 -42 q-18 0 -14 30 q11 -5 16 -20z" fill="#8A4F22"/>
-    <path d="M36 -46 q15 -9 20 7 q-9 2 -15 4z" fill="#8A4F22"/>
-    ${oeil(28,-29,6.5)}
-    <path d="M38 -5 q5 9 12 2" stroke="#2B2A3D" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-    <path d="M42 -3 q2 6 5 1z" fill="#FF7A8A"/>
-    <ellipse cx="22" cy="-12" rx="6" ry="4" fill="#FF8C7A" opacity=".35"/>
-    <path d="M12 -2 q12 6 24 0" stroke="#3E7BD6" stroke-width="6" fill="none" stroke-linecap="round"/>
-    <circle cx="24" cy="4" r="5" fill="url(#gCorne)" stroke="#C99021" stroke-width="1.5"/>
-    ${casque?`<path d="M2 -42 q20 -30 48 -6 z" fill="url(#gFeu)" stroke="#C9553A" stroke-width="2"/><ellipse cx="22" cy="-52" rx="8" ry="3" fill="#fff" opacity=".4"/>`:''}
+    <g filter="url(#volume)">
+    <path d="M-30 4 q-20 -10 -21 -26" stroke="url(#gChien)" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <path d="M-52 -22 l-4 -6 M-50 -24 l1 -7" stroke="#C98545" stroke-width="3" stroke-linecap="round"/>
+    <ellipse cx="0" cy="8" rx="34" ry="24" fill="url(#gChien)" stroke="#A9682F" stroke-width="2"/>
+    <ellipse cx="0" cy="8" rx="34" ry="24" fill="url(#gRim)"/>
+    <ellipse cx="6" cy="14" rx="18" ry="12" fill="#FCE6C8" opacity=".9"/>
+    <rect x="-24" y="20" width="12" height="19" rx="6" fill="url(#gChien)" stroke="#A9682F" stroke-width="2"/>
+    <rect x="12" y="20" width="12" height="19" rx="6" fill="url(#gChien)" stroke="#A9682F" stroke-width="2"/>
+    <path d="M-2 -46 q-20 -2 -18 34 q12 -4 20 -22z" fill="#8A4F22"/>
+    <path d="M50 -46 q20 -2 18 34 q-12 -4 -20 -22z" fill="#8A4F22"/>
+    <circle cx="24" cy="-22" r="28" fill="url(#gChien)" stroke="#A9682F" stroke-width="2"/>
+    <circle cx="24" cy="-22" r="28" fill="url(#gRim)"/>
+    <path d="M12 -48 q3 -10 7 -2 q3 -11 8 -1 q4 -9 7 2" fill="url(#gChien)" stroke="#A9682F" stroke-width="1.5"/>
+    <ellipse cx="14" cy="-40" rx="10" ry="4.5" fill="#fff" opacity=".3" transform="rotate(-20 14 -40)"/>
+    <ellipse cx="25" cy="-9" rx="16" ry="12" fill="#FCE6C8"/>
+    <ellipse cx="25" cy="-15" rx="6.5" ry="4.8" fill="#2B2A3D"/><ellipse cx="23" cy="-16.5" rx="2.2" ry="1.3" fill="#fff" opacity=".75"/>
+    ${oeil(13,-28,7,{iris:'gIrisChien',sourcil:'#7A4420',dir:-1})}${oeil(36,-28,7,{iris:'gIrisChien',sourcil:'#7A4420'})}
+    <path d="M17 -4 q8 8 16 0" stroke="#2B2A3D" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <path d="M22 -2 q3 8 6 0z" fill="#FF7A8A"/>
+    <ellipse cx="5" cy="-14" rx="5" ry="3.5" fill="#FF8C7A" opacity=".35"/><ellipse cx="44" cy="-14" rx="5" ry="3.5" fill="#FF8C7A" opacity=".35"/>
+    <path d="M10 2 q14 7 28 0" stroke="#3E7BD6" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <circle cx="24" cy="7" r="5" fill="url(#gCorne)" stroke="#C99021" stroke-width="1.5"/>
+    ${casque?`<path d="M-4 -44 q28 -34 56 0 z" fill="url(#gFeu)" stroke="#C9553A" stroke-width="2"/><rect x="18" y="-58" width="12" height="10" rx="3" fill="url(#gCorne)"/><ellipse cx="14" cy="-54" rx="8" ry="3" fill="#fff" opacity=".45"/>`:''}
+    </g>
   </g>`;
 }
 function chaton(x,y,s=1){
   return `<g class="touche" data-son="miaou" transform="translate(${x},${y}) scale(${s})">
     ${ombreSol(0,20,18)}
+    <g filter="url(#volume)">
     <path d="M14 6 q15 -4 13 -19" stroke="url(#gChat)" stroke-width="5" fill="none" stroke-linecap="round"/>
-    <ellipse cx="0" cy="8" rx="16" ry="12" fill="url(#gChat)" stroke="#8C92A1" stroke-width="1.5"/>
-    <path d="M-17 -16 l2 -13 l9 8z M5 -16 l-2 -13 l-9 8z" fill="url(#gChat)" stroke="#8C92A1" stroke-width="1.5"/>
-    <path d="M-14 -18 l1 -6 l4 4z M3 -18 l-1 -6 l-4 4z" fill="#FFB3C1"/>
-    <circle cx="-6" cy="-10" r="14" fill="url(#gChat)" stroke="#8C92A1" stroke-width="1.5"/>
-    ${oeil(-11,-11,3.6,{iris:'gIrisC'})}${oeil(-1,-11,3.6,{iris:'gIrisC'})}
-    <path d="M-7.5 -4.5 l1.5 1.2 l1.5 -1.2z" fill="#FF8FA3"/>
-    <path d="M-9 -2 q3 3 6 0" stroke="#2B2A3D" stroke-width="1.3" fill="none"/>
+    <ellipse cx="0" cy="8" rx="16" ry="12" fill="url(#gChat)" stroke="#8C92A1" stroke-width="1.2"/>
+    <path d="M-18 -16 l1 -14 l10 9z M6 -16 l-1 -14 l-10 9z" fill="url(#gChat)" stroke="#8C92A1" stroke-width="1.2"/>
+    <path d="M-15 -18 l1 -7 l4 4z M3 -18 l-1 -7 l-4 4z" fill="#FFB3C1"/>
+    <circle cx="-6" cy="-10" r="15" fill="url(#gChat)" stroke="#8C92A1" stroke-width="1.2"/>
+    <circle cx="-6" cy="-10" r="15" fill="url(#gRim)"/>
+    ${oeil(-12,-12,4.6,{iris:'gIrisC',sourcil:false,dir:-1})}${oeil(0,-12,4.6,{iris:'gIrisC',sourcil:false})}
+    <path d="M-7.5 -4 l1.5 1.2 l1.5 -1.2z" fill="#FF8FA3"/>
+    <path d="M-9 -1.5 q3 3 6 0" stroke="#2B2A3D" stroke-width="1.2" fill="none"/>
+    <path d="M-16 -5 h-7 M-16 -3 l-7 2 M4 -5 h7 M4 -3 l7 2" stroke="#8C92A1" stroke-width=".8"/>
+    </g>
   </g>`;
 }
 const fond=(ciel='#BFE3F2',sol=C.herbe)=>{
@@ -190,7 +212,14 @@ const bulles=(x,y)=>[0,1,2,3].map(i=>`<circle class="bulle" style="animation-del
 const lit=(x,y)=>`<g transform="translate(${x},${y})"><rect x="-120" y="-10" width="240" height="60" rx="16" fill="#8E7CC3"/><rect x="-130" y="-60" width="26" height="110" rx="10" fill="#6B5AA5"/><rect x="104" y="-30" width="26" height="80" rx="10" fill="#6B5AA5"/><ellipse cx="-80" cy="-14" rx="30" ry="16" fill="#fff"/></g>`;
 const couverture=(x,y)=>`<path transform="translate(${x},${y})" d="M-100 -30 q100 -30 210 0 v40 h-210z" fill="${C.sol}"/><g transform="translate(${x},${y})">${[-70,-30,10,50,90].map(c=>`<circle cx="${c}" cy="-6" r="6" fill="${C.cor}"/>`).join('')}</g>`;
 const DEFS=`<defs>
-<linearGradient id="gPist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B4EA74"/><stop offset=".55" stop-color="#86CB4B"/><stop offset="1" stop-color="#5DA535"/></linearGradient>
+<linearGradient id="gBlanc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#DCE0EC"/></linearGradient>
+<radialGradient id="gRim" cx=".35" cy=".3" r=".75"><stop offset=".72" stop-color="#fff" stop-opacity="0"/><stop offset=".92" stop-color="#1B1530" stop-opacity=".12"/><stop offset="1" stop-color="#FFF7D6" stop-opacity=".35"/></radialGradient>
+<radialGradient id="gMuseau" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#D8F5A8"/><stop offset="1" stop-color="#8FCB55"/></radialGradient>
+<radialGradient id="gIrisChien" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#C98A4A"/><stop offset="1" stop-color="#5A3214"/></radialGradient>
+<radialGradient id="gIrisVert" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#9BC98A"/><stop offset="1" stop-color="#3E6E4A"/></radialGradient>
+<pattern id="ecailles" width="11" height="9" patternUnits="userSpaceOnUse"><path d="M0 9 q5.5 -9 11 0" stroke="#2E6A18" stroke-opacity=".22" fill="none" stroke-width="1.3"/></pattern>
+<filter id="volume" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#1B1530" flood-opacity=".22"/></filter>
+<linearGradient id="gPist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BFF27A"/><stop offset=".5" stop-color="#7FCB3E"/><stop offset="1" stop-color="#4E9A28"/></linearGradient>
 <linearGradient id="gAile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E2F7B8"/><stop offset="1" stop-color="#9DD46A"/></linearGradient>
 <linearGradient id="gCrete" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFA36E"/><stop offset="1" stop-color="#F0603F"/></linearGradient>
 <linearGradient id="gCorne" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE68A"/><stop offset="1" stop-color="#F2AE2E"/></linearGradient>
@@ -226,7 +255,7 @@ function garcon(x,y,s=1,{cartable=false,bras=false,content=true}={}){
     ${cartable?`<path d="M-14 -32 l4 30 M12 -32 l-4 30" stroke="#C9553A" stroke-width="4"/>`:''}
     <circle cx="0" cy="-56" r="26" fill="url(#gPeau)"/>
     <path d="M-27 -58 q0 -30 28 -28 q26 0 26 24 q-8 -10 -18 -12 q-4 8 -14 6 q-10 2 -22 10z" fill="#6B4226"/>
-    ${oeil(-9,-54,5.4)}${oeil(9,-54,5.4)}
+    ${oeil(-9,-55,6.6,{dir:-1})}${oeil(9,-55,6.6,{dir:1})}
     <circle cx="-15" cy="-45" r="5" fill="#FF9F8A" opacity=".5"/><circle cx="15" cy="-45" r="5" fill="#FF9F8A" opacity=".5"/>
     ${content?`<path d="M-8 -42 q8 8 16 0" stroke="${C.enc}" stroke-width="2.8" fill="none" stroke-linecap="round"/>`:`<path d="M-6 -40 q6 -4 12 0" stroke="${C.enc}" stroke-width="2.8" fill="none" stroke-linecap="round"/>`}
   </g>`;
@@ -249,7 +278,7 @@ function fille(x,y,s=1,{bras=false,fraise=false}={}){
     <circle cx="0" cy="-60" r="25" fill="url(#gPeau)"/>
     <path d="M-26 -60 q-2 -32 26 -30 q28 -2 26 30 q-6 -16 -26 -18 q-20 2 -26 18z" fill="#4A2E1C"/>
     <circle cx="20" cy="-80" r="5" fill="${C.sol}"/>
-    ${oeil(-8,-58,5.2,{cils:true})}${oeil(8,-58,5.2,{cils:true})}
+    ${oeil(-8,-59,6.4,{cils:true,sourcil:'#3B2414',dir:-1})}${oeil(8,-59,6.4,{cils:true,sourcil:'#3B2414',dir:1})}
     <circle cx="-14" cy="-49" r="4.5" fill="#FF9F8A" opacity=".5"/><circle cx="14" cy="-49" r="4.5" fill="#FF9F8A" opacity=".5"/>
     <path d="M-7 -46 q7 7 14 0" stroke="${C.enc}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
   </g>`;
@@ -267,7 +296,7 @@ function tata(x,y,s=1,{carnet=false,bras=false}={}){
     <rect x="-7" y="-80" width="14" height="14" fill="url(#gPeau)"/>
     <circle cx="0" cy="-100" r="26" fill="url(#gPeau)"/>
     <path d="M-28 -100 q-2 -34 28 -32 q30 -2 28 32 q-10 -20 -30 -22 q-14 6 -26 22z" fill="#7A4A2A"/>
-    ${oeil(-9,-98,5,{cils:true})}${oeil(9,-98,5,{cils:true})}
+    ${oeil(-9,-99,6.2,{cils:true,iris:'gIrisVert',sourcil:'#5A3418',dir:-1})}${oeil(9,-99,6.2,{cils:true,iris:'gIrisVert',sourcil:'#5A3418',dir:1})}
     <circle cx="-15" cy="-89" r="5" fill="#FF9F8A" opacity=".45"/><circle cx="15" cy="-89" r="5" fill="#FF9F8A" opacity=".45"/>
     <path d="M-8 -86 q8 8 16 0" stroke="${C.enc}" stroke-width="2.8" fill="none" stroke-linecap="round"/>
   </g>`;
