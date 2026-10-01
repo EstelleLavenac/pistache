@@ -205,11 +205,10 @@ function son(type){
   try{ ac=ac||new (window.AudioContext||window.webkitAudioContext)(); if(ac.state==='suspended') ac.resume(); }catch(e){return}
   const t=ac.currentTime, o=ac.createOscillator(), g=ac.createGain(); o.connect(g); g.connect(ac.destination);
   const env=(a,d)=>{g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(a,t+.03);g.gain.exponentialRampToValueAtTime(0.0001,t+d)};
-  if(type==='dragon'){o.type='sawtooth';o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(70,t+.6);env(.25,.7);o.stop(t+.75)}
-  else if(type==='ouaf'){o.type='square';o.frequency.setValueAtTime(380,t);o.frequency.exponentialRampToValueAtTime(180,t+.15);env(.2,.2);o.stop(t+.22)}
-  else if(type==='miaou'){o.type='triangle';o.frequency.setValueAtTime(600,t);o.frequency.linearRampToValueAtTime(900,t+.2);o.frequency.linearRampToValueAtTime(500,t+.5);env(.25,.55);o.stop(t+.6)}
-  else {o.type='sine';o.frequency.setValueAtTime(880,t);o.frequency.setValueAtTime(1320,t+.12);env(.2,.4);o.stop(t+.45)}
-  o.start(t);
+  if(type==='dragon'){o.type='sawtooth';o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(70,t+.6);env(.25,.7);o.start(t);o.stop(t+.75)}
+  else if(type==='ouaf'){o.type='square';o.frequency.setValueAtTime(380,t);o.frequency.exponentialRampToValueAtTime(180,t+.15);env(.2,.2);o.start(t);o.stop(t+.22)}
+  else if(type==='miaou'){o.type='triangle';o.frequency.setValueAtTime(600,t);o.frequency.linearRampToValueAtTime(900,t+.2);o.frequency.linearRampToValueAtTime(500,t+.5);env(.25,.55);o.start(t);o.stop(t+.6)}
+  else {o.type='sine';o.frequency.setValueAtTime(880,t);o.frequency.setValueAtTime(1320,t+.12);env(.2,.4);o.start(t);o.stop(t+.45)}
 }
 
 /* ---------- Voix ---------- */
@@ -225,6 +224,16 @@ function debloquerVoix(){ // iPhone/iPad : la voix doit démarrer pendant un tou
 function avertir(msg){
   let b=document.getElementById('avert'); if(!b){ b=document.createElement('p'); b.id='avert'; b.className='astuce'; b.style.cssText='background:#FFE7DF;color:#8A3A22;border-radius:14px;padding:10px 14px'; document.querySelector('.lecture')?.appendChild(b); }
   b.textContent=msg;
+}
+let audioEnCours=null;
+function stopAudio(){ if(audioEnCours){ audioEnCours.onended=null; audioEnCours.pause(); audioEnCours=null; } if(parle) speechSynthesis.cancel(); }
+function lirePage(cle,txt,el,fini){
+  stopAudio(); document.getElementById('avert')?.remove();
+  const a=new Audio('audio/'+cle+'.mp3'); audioEnCours=a;
+  const mots=el?[...el.querySelectorAll('.mot')]:[]; const total=txt.length; const cumul=[]; let c=0; mots.forEach(m=>{c+=m.textContent.length+1;cumul.push(c)});
+  a.ontimeupdate=()=>{ if(!a.duration) return; const pos=(a.currentTime/(a.duration-0.3))*total; mots.forEach((m,i)=>m.classList.toggle('lu',cumul[i]-1<=pos)); };
+  a.onended=()=>{ mots.forEach(m=>m.classList.add('lu')); if(audioEnCours===a) audioEnCours=null; fini&&fini(); };
+  a.play().catch(()=>{ if(audioEnCours===a){ audioEnCours=null; el?lireTexte(txt,el,fini):fini&&fini(); } });
 }
 function lireTexte(txt,el,fini){
   if(!parle){avertir("Ce navigateur ne sait pas lire à voix haute. Essaie avec Chrome ou Safari à jour.");fini&&fini();return}
@@ -253,7 +262,7 @@ const ic={
 let auto=false;
 
 function accueil(){
-  if(parle) speechSynthesis.cancel(); auto=false;
+  stopAudio(); auto=false;
   app.innerHTML=`<header class="tete">${svg(dragon(330,250,2.6)).replace('viewBox="0 0 640 400"','viewBox="140 30 420 340"')}
     <div><h1>Les histoires de Pistache</h1><p>Choisis une histoire !</p></div></header>
     <section class="etageres">${HISTOIRES.map(h=>`<button class="livre" data-id="${h.id}" id="livre-${h.id}">${h.couverture()}<span>${h.titre}<small>${h.sous}</small></span></button>`).join('')}</section>
@@ -262,6 +271,7 @@ function accueil(){
 }
 
 function ouvrir(id,p){
+  stopAudio();
   const h=HISTOIRES.find(x=>x.id===id); const n=h.pages.length;
   if(p>=n) return finale(h);
   const [txt,scene]=h.pages[p];
@@ -272,16 +282,16 @@ function ouvrir(id,p){
     <div class="scene" id="scene">${svg(scene())}</div>
     <p class="texte" id="texte">${txt.split(' ').map(m=>`<span class="mot">${m}</span>`).join(' ')}</p>
     <div class="nav"><button class="fleche" id="prec" aria-label="Page précédente" ${p===0?'disabled':''}>${ic.gauche}</button>
-      ${parle?`<button class="lire" id="lire">${ic.voix}Lis-moi</button>`:''}
+      <button class="lire" id="lire">${ic.voix}Lis-moi</button>
       <button class="fleche" id="suiv" aria-label="Page suivante">${ic.droite}</button></div></div>`;
   const texte=document.getElementById('texte');
   document.getElementById('maison').onclick=accueil;
   document.getElementById('prec').onclick=()=>ouvrir(id,p-1);
   document.getElementById('suiv').onclick=()=>ouvrir(id,p+1);
-  const lire=document.getElementById('lire'); if(lire) lire.onclick=()=>{debloquerVoix();lireTexte(txt,texte)};
-  document.getElementById('auto').onclick=()=>{auto=!auto; document.getElementById('auto').classList.toggle('actif',auto); if(auto) lireTexte(txt,texte,()=>auto&&setTimeout(()=>auto&&ouvrir(id,p+1),900)); else if(parle) speechSynthesis.cancel();};
+  const lire=document.getElementById('lire'); if(lire) lire.onclick=()=>lirePage(id+'-'+p,txt,texte);
+  document.getElementById('auto').onclick=()=>{auto=!auto; document.getElementById('auto').classList.toggle('actif',auto); if(auto) lirePage(id+'-'+p,txt,texte,()=>auto&&setTimeout(()=>auto&&ouvrir(id,p+1),900)); else stopAudio();};
   document.getElementById('scene').onclick=e=>{const t=e.target.closest('.touche'); if(!t) return; son(t.dataset.son); t.classList.remove('saute'); void t.getBBox; requestAnimationFrame(()=>t.classList.add('saute'));};
-  if(auto) lireTexte(txt,texte,()=>auto&&setTimeout(()=>auto&&ouvrir(id,p+1),900));
+  if(auto) lirePage(id+'-'+p,txt,texte,()=>auto&&setTimeout(()=>auto&&ouvrir(id,p+1),900));
 }
 
 function finale(h){
@@ -291,7 +301,7 @@ function finale(h){
     <div class="scene" id="scene">${svg(fond()+soleil()+nuage(140,70)+dragon(220,290,1.3,{flamme:true})+chienne(500,300,1.2)+bulles(330,170))}</div>
     <p class="texte">Fin ! Bravo, tu as écouté toute l’histoire.</p>
     <div class="fin"><button class="lire" id="encore">${ic.encore}Encore !</button><button class="lire" id="autre" style="background:var(--pistache);box-shadow:0 5px 0 var(--pistache-f)">Une autre histoire</button></div></div>`;
-  son('ding');
+  stopAudio(); son('ding'); setTimeout(()=>lirePage('fin','',null),500);
   document.getElementById('maison').onclick=accueil;
   document.getElementById('autre').onclick=accueil;
   document.getElementById('encore').onclick=()=>ouvrir(h.id,0);

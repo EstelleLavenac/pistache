@@ -1,5 +1,5 @@
-const CACHE='pistache-v1';
-const FICHIERS=['./','index.html','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png'];
+const CACHE='pistache-v2';
+const FICHIERS=['./','index.html','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png','audio/chaton-0.mp3','audio/chaton-1.mp3','audio/chaton-2.mp3','audio/chaton-3.mp3','audio/chaton-4.mp3','audio/chaton-5.mp3','audio/dodo-0.mp3','audio/dodo-1.mp3','audio/dodo-2.mp3','audio/dodo-3.mp3','audio/dodo-4.mp3','audio/fin.mp3','audio/gateau-0.mp3','audio/gateau-1.mp3','audio/gateau-2.mp3','audio/gateau-3.mp3','audio/gateau-4.mp3','audio/hoquet-0.mp3','audio/hoquet-1.mp3','audio/hoquet-2.mp3','audio/hoquet-3.mp3','audio/hoquet-4.mp3','audio/hoquet-5.mp3'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FICHIERS)));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(n=>n!==CACHE).map(n=>caches.delete(n)))));self.clients.claim();});
 self.addEventListener('fetch',e=>{
