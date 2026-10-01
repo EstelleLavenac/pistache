@@ -356,9 +356,9 @@ function finale(h){
   app.innerHTML=`<div class="lecture">
     <div class="barre"><button class="rond" id="maison" aria-label="Retour aux histoires">${ic.maison}</button><div></div><div style="width:56px"></div></div>
     <div class="scene" id="scene">${svg(fond()+soleil()+nuage(140,70)+dragon(220,290,1.3,{flamme:true})+chienne(500,300,1.2)+bulles(330,170))}</div>
-    <p class="texte">Fin ! Bravo, tu as écouté toute l’histoire.</p>
+    <p class="texte">${h.id==='noa'?'Fin ! Bravo, tu as écouté toute l’histoire, Noa !':'Fin ! Bravo, tu as écouté toute l’histoire.'}</p>
     <div class="fin"><button class="lire" id="encore">${ic.encore}Encore !</button><button class="lire" id="autre" style="background:var(--pistache);box-shadow:0 5px 0 var(--pistache-f)">Une autre histoire</button></div></div>`;
-  stopAudio(); son('ding'); setTimeout(()=>lirePage('fin','',null),500);
+  stopAudio(); son('ding'); setTimeout(()=>lirePage(h.id==='noa'?'noa-fin':'fin','',null),500);
   document.getElementById('maison').onclick=accueil;
   document.getElementById('autre').onclick=accueil;
   document.getElementById('encore').onclick=()=>ouvrir(h.id,0);
